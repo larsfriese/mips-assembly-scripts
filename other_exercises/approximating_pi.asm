@@ -1,7 +1,4 @@
 # Approximate PI using the Gregory-Leibniz Series. (see pdf description)
-# Use double precision. Example:
-# "What precision do you want for PI?" >> Input Float: for example 0.00001
-# "PI with an error of 0.00001: 3.14159265"
 
 .data
 pi:		.double 3.141592653589793 
