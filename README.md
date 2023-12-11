@@ -19,6 +19,7 @@ Additional solutions to exercises:
   - [Palindrome checking](other_exercises/palindrome_checker.asm)
   - [String reversing](other_exercises/string_reversing.asm)
 - Floating Point Exercises:
-  - Approximating PI
+  - [Approximating PI](other_exercises/approximating_pi.asm)
+    - Explanation of exercise: [approximating_pi_explanation.pdf](other_exercises/approximating_pi_explanation.pdf)
 - Stack Exercises:
   - Calculating factorial
