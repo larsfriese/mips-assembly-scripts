@@ -1,78 +1,76 @@
 .data
-sp:	.space 132 # f�r die zeichenkette
-text1:	.asciiz "Eingabe>"
-text2:	.asciiz "Schluessel>"
+sp:	.space 132 # for string
+text1:	.asciiz "Input your string: \t"
+text2:	.asciiz "Input key: \t"
+text3:	.asciiz "Encrypted string: \n"
 
 .text
-	# abort char
-	addi $s1, $zero, '$'
-	
-	# text1
+	# "Input your string: \t"
 	li $v0, 4
 	la $a0, text1
 	syscall
 	
-	# set adress to start of data segment
-	lui $a0 0x1001
-	ori $a0, $a0, 0x0000
-	addi $a1, $zero, 128
-	
-	# ask for string
+	# read string
 	li $v0, 8
+	la $a0, sp
+	addi $a1, $zero, 128
 	syscall
 	
-	# text2
+	# "Input key: \t"
 	li $v0, 4
-	la $a0, text1
+	la $a0, text2
 	syscall
 	
-	# input schluessel
+	# read key and move to $t2
 	li $v0, 5
 	syscall
-	move $t2, $v0
+	move $10, $v0
 	
-	# set a0 to start of data segment
-	lui $t4 0x1001
-	ori $t4, $t4, 0x0000
-	
-	j next
-	
+	la $a0, sp
 
-# t4: memeory counter
-# t2: key
-# t1: current character being editeds
-
-next:
-	# load new char from memory
-	lb $t1, ($t4)
+loop:
+	# prinatble ascii symbols:
+	# starting with SP at 32
+	# and ending with ~ at 126
 	
-	# end char = end char
-	beq $s1, $t1, done
+	# load letter and add key
+	lb $15, 0($a0)
 	
-	# if new key outside of char
-	# branch to where it will be subtracted until it works again
-	# char has to be between 32 and 126
-	bge $s1, 126, recalc
-
-back:
-	# add key amount to byte
-	add $t1, $t1, $t2
+	# check if end of string reached
+	beq $15, $zero, done
 	
-	# print out
-	# print the new char
-	add $a0, $t1, 0
-	li $v0, 11
-	syscall
+	# increment char by key
+	add $15, $15, $10
 	
-	addi $t4, $t4, 1
-	j next
+	# increment char by 32, as thats the starting range value
+	subi $15, $15, 32
 	
-recalc:
-	subi $t1, $t1, 93
-	bge $s1, 126, recalc
-	j back
+	# now divide by 126 and get remainder
+	div $15, $15, 126 # remainder in HI
+	mfhi $15
+	
+	# now subtract 32 again, to get actual ascii value back
+	addi $15, $15, 32
+	
+	# save back to storage
+	sb $15 0($a0)
+	
+	# increment by 1 byte
+	addi $a0, $a0, 1
+	
+	j loop
 
 done:
+	# "Encrypted string: \t"
+	li $v0, 4
+	la $a0, text3
+	syscall
+	
+	# new string
+	li $v0, 4
+	la $a0, sp
+	syscall
+	
 	# clean exit
 	li $v0, 10
 	syscall
